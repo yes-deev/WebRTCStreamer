@@ -28,16 +28,14 @@ import com.cloudphone.webrtcstreamer.databinding.DialogSettingsBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 /**
- * Ultra-Compatible Scrcpy Streamer Activity.
- * Uses WebAssembly tinyh264 / broadway canvas rendering engine for 100% video display reliability
- * across all Android WebView versions without MSE/black screen bugs.
+ * UgPhone Cloud Phone Client.
+ * Loads clean stream URL directly (e.g. http://185.227.111.231:7000) without appending hash parameters.
  */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var sharedPreferences: SharedPreferences
 
-    private var selectedPlayerEngine = "tinyh264" // "tinyh264" or "broadway" or "mse"
     private var selectedResolution = "1080p"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,11 +92,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnConnectDash1.setOnClickListener {
-            connectToStreamSession(getPersistedUrl(), "tinyh264")
+            connectToStreamSession(getPersistedUrl())
         }
 
         binding.btnConnectDash2.setOnClickListener {
-            connectToStreamSession("http://185.227.111.231:7000", "broadway")
+            connectToStreamSession("http://185.227.111.231:7001")
         }
 
         binding.btnVpsSettings.setOnClickListener {
@@ -107,28 +105,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Formats stream URL with tinyh264 / broadway WebAssembly canvas engine to guarantee
-     * instant video output without black screen.
+     * Loads clean stream URL directly (without appending hash parameters).
      */
-    private fun formatStreamHashUrl(baseUrl: String, player: String = selectedPlayerEngine): String {
-        val cleanBase = baseUrl.trimEnd('/')
-        return if (!cleanBase.contains("#!action=stream")) {
-            "$cleanBase/#!action=stream&udid=redroid:5555&player=$player"
-        } else {
-            cleanBase
-        }
-    }
-
-    private fun connectToStreamSession(baseUrl: String, player: String = "tinyh264") {
-        selectedPlayerEngine = player
-        val streamUrl = formatStreamHashUrl(baseUrl, player)
+    private fun connectToStreamSession(rawUrl: String) {
+        val cleanUrl = rawUrl.trim()
 
         binding.dashboardLayout.visibility = View.GONE
         binding.streamContainer.visibility = View.VISIBLE
-        binding.tvStreamStatus.text = "$selectedResolution | $player"
+        binding.tvStreamStatus.text = "$selectedResolution | 60 FPS"
 
-        Toast.makeText(this, "Connecting with WebAssembly $player Engine...", Toast.LENGTH_SHORT).show()
-        binding.webView.loadUrl(streamUrl)
+        Toast.makeText(this, "Connecting to Cloud Phone Stream...", Toast.LENGTH_SHORT).show()
+        binding.webView.loadUrl(cleanUrl)
     }
 
     private fun disconnectToDashboard() {
@@ -146,8 +133,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnReconnect.setOnClickListener {
             Toast.makeText(this, "Reconnecting stream...", Toast.LENGTH_SHORT).show()
             binding.tvStreamStatus.text = "RECONNECTING..."
-            val streamUrl = formatStreamHashUrl(getPersistedUrl())
-            binding.webView.loadUrl(streamUrl)
+            binding.webView.loadUrl(getPersistedUrl().trim())
         }
 
         binding.btnSettings.setOnClickListener {
@@ -157,9 +143,6 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun setupHardwareAcceleratedStreamView() {
-        // Enable Chrome DevTools debugging for WebView inspection
-        WebView.setWebContentsDebuggingEnabled(true)
-
         binding.webView.apply {
             setLayerType(View.LAYER_TYPE_HARDWARE, null)
             overScrollMode = View.OVER_SCROLL_NEVER
@@ -177,11 +160,7 @@ class MainActivity : AppCompatActivity() {
                 useWideViewPort = true
                 loadWithOverviewMode = true
                 cacheMode = WebSettings.LOAD_NO_CACHE
-                javaScriptCanOpenWindowsAutomatically = true
 
-                // Enable WebAssembly & WebGL capabilities
-                setRenderPriority(WebSettings.RenderPriority.HIGH)
-                
                 @Suppress("DEPRECATION")
                 allowFileAccessFromFileURLs = true
                 @Suppress("DEPRECATION")
@@ -219,13 +198,12 @@ class MainActivity : AppCompatActivity() {
                     super.onPageFinished(view, url)
                     if (url == "about:blank") return
 
-                    binding.tvStreamStatus.text = "$selectedResolution | $selectedPlayerEngine"
+                    binding.tvStreamStatus.text = "$selectedResolution | 60 FPS"
 
-                    // Auto-trigger video/canvas stream and render 100% fullscreen canvas
-                    val autoStreamFixJs = """
+                    // Clean auto-stream trigger script from working v3.0.0 version
+                    val workingStreamJs = """
                         (function() {
-                            function applyCanvasFix() {
-                                // Auto-trigger stream link if present
+                            function initWorkingStream() {
                                 var links = document.querySelectorAll('a, button, div.action');
                                 for (var i = 0; i < links.length; i++) {
                                     var el = links[i];
@@ -237,13 +215,11 @@ class MainActivity : AppCompatActivity() {
                                     }
                                 }
 
-                                // Play any video elements
                                 var videos = document.querySelectorAll('video');
                                 videos.forEach(function(v) {
                                     v.play().catch(function(e){});
                                 });
 
-                                // Apply 100% Fullscreen CSS for both Canvas (tinyh264/broadway) and Video (MSE)
                                 var style = document.getElementById('ugphone-style');
                                 if (!style) {
                                     style = document.createElement('style');
@@ -275,13 +251,13 @@ class MainActivity : AppCompatActivity() {
                                 `;
                             }
 
-                            applyCanvasFix();
-                            setTimeout(applyCanvasFix, 1000);
-                            setTimeout(applyCanvasFix, 2500);
+                            initWorkingStream();
+                            setTimeout(initWorkingStream, 1000);
+                            setTimeout(initWorkingStream, 2500);
                         })();
                     """.trimIndent()
 
-                    view?.evaluateJavascript(autoStreamFixJs, null)
+                    view?.evaluateJavascript(workingStreamJs, null)
                 }
 
                 override fun onReceivedError(
@@ -327,13 +303,13 @@ class MainActivity : AppCompatActivity() {
             val targetUrl = if (isValidUrl(inputUrl)) inputUrl else DEFAULT_STREAM_URL
             saveAndReloadUrl(targetUrl)
             dialog?.dismiss()
-            connectToStreamSession(targetUrl, "tinyh264")
+            connectToStreamSession(targetUrl)
         }
 
         dialogBinding.btnConnectInstance2.setOnClickListener {
-            saveAndReloadUrl("http://185.227.111.231:7000")
+            saveAndReloadUrl("http://185.227.111.231:7001")
             dialog?.dismiss()
-            connectToStreamSession("http://185.227.111.231:7000", "broadway")
+            connectToStreamSession("http://185.227.111.231:7001")
         }
 
         dialogBinding.btnDisconnectDialog.setOnClickListener {
