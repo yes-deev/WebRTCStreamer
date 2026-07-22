@@ -1,8 +1,10 @@
-#Wed Jul 22 12:13:06 UTC 2026
+#Wed Jul 22 12:15:09 UTC 2026
+path.4=5/classes.dex
 path.3=4/classes.dex
 path.2=13/classes.dex
 path.1=0/classes.dex
 path.0=classes.dex
+base.4=/root/h/WebRTCStreamer/app/build/intermediates/dex/debug/mergeProjectDexDebug/5/classes.dex
 base.3=/root/h/WebRTCStreamer/app/build/intermediates/dex/debug/mergeProjectDexDebug/4/classes.dex
 base.2=/root/h/WebRTCStreamer/app/build/intermediates/dex/debug/mergeProjectDexDebug/13/classes.dex
 base.1=/root/h/WebRTCStreamer/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
@@ -11,3 +13,4 @@ renamed.3=classes4.dex
 renamed.2=classes3.dex
 renamed.1=classes2.dex
 renamed.0=classes.dex
+renamed.4=classes5.dex

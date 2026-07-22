@@ -9,14 +9,13 @@
     android:fitsSystemWindows="false"
     tools:context=".MainActivity">
 
-    <!-- Zero-Delay Hardware-Accelerated Fullscreen WebView -->
-    <android.webkit.WebView
-        android:id="@+id/webView"
+    <!-- 100% Native Low-Latency Hardware Accelerated Scrcpy SurfaceView (NO WEBVIEW) -->
+    <SurfaceView
+        android:id="@+id/surfaceView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:overScrollMode="never"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
