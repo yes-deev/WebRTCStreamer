@@ -1,0 +1,30 @@
+R_DEF: Internal format may change without notice
+local
+color black
+color purple_200
+color purple_500
+color purple_700
+color teal_200
+color teal_700
+color white
+drawable bg_settings_button
+drawable ic_settings
+id btnSettings
+id etStreamUrl
+id rootLayout
+id tilStreamUrl
+id tvSettingsDescription
+id webView
+layout activity_main
+layout dialog_settings
+string app_name
+string btn_cancel
+string btn_reset
+string btn_save
+string error_invalid_url
+string permission_denied_toast
+string settings_description
+string settings_title
+string stream_url_hint
+string toast_url_saved
+style Theme.WebRTCStreamer

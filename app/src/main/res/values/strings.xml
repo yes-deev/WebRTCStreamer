@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">WebRTC Streamer</string>
+    <string name="settings_title">Stream Settings</string>
+    <string name="settings_description">Enter the IP address or URL of your cloud phone / WebRTC stream instance (e.g. Redroid, ws-scrcpy).</string>
+    <string name="stream_url_hint">VPS Stream URL</string>
+    <string name="btn_save">Save &amp; Connect</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_reset">Reset Default</string>
+    <string name="error_invalid_url">Please enter a valid URL starting with http:// or https://</string>
+    <string name="toast_url_saved">Stream URL saved. Reloading stream...</string>
+    <string name="permission_denied_toast">Camera and Microphone permissions are required for full WebRTC functionality.</string>
+</resources>
