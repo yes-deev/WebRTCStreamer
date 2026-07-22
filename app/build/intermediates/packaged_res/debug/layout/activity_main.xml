@@ -5,106 +5,453 @@
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
+    android:background="#0F0F1A"
     android:fitsSystemWindows="false"
     tools:context=".MainActivity">
 
-    <!-- Zero-Delay Hardware-Accelerated Fullscreen Cloud Phone Renderer -->
-    <android.webkit.WebView
-        android:id="@+id/webView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:overScrollMode="never"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Premium Floating Stream HUD / Control Bar (Top-Right Overlay) -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardHudBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        app:cardBackgroundColor="#80000000"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="6dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:strokeColor="#33FFFFFF"
-        app:strokeWidth="1dp">
+    <!-- VIEW 1: Futurist Material3 Native Dashboard (Shown on App Launch) -->
+    <ScrollView
+        android:id="@+id/dashboardLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:visibility="visible">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="12dp"
-            android:paddingTop="4dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="4dp">
+            android:orientation="vertical"
+            android:padding="24dp">
 
-            <!-- Live Status Indicator -->
-            <View
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:background="@drawable/bg_settings_button"
-                android:backgroundTint="#4CAF50" />
+            <!-- Top App Header -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp">
 
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="UGPHONE WEBRTC"
+                        android:textAppearance="?attr/textAppearanceLabelLarge"
+                        android:textColor="#8A8DFF"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cloud Phone Hub"
+                        android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnVpsSettings"
+                    style="@style/Widget.Material3.Button.IconButton.Outlined"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    app:icon="@drawable/ic_settings"
+                    app:iconTint="#FFFFFF"
+                    app:strokeColor="#33FFFFFF" />
+            </RelativeLayout>
+
+            <!-- VPS Server Status Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:cardBackgroundColor="#1A1B2E"
+                app:cardCornerRadius="16dp"
+                app:strokeColor="#2E3054"
+                app:strokeWidth="1dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvVpsIp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="VPS Server: 185.227.111.231"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textColor="#E0FFFFFF"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Scrcpy WebRTC Engine • Port 7000"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="#A0A5C0" />
+                    </LinearLayout>
+
+                    <!-- Green Online Badge -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/bg_settings_button"
+                        android:backgroundTint="#1B382B"
+                        android:gravity="center"
+                        android:paddingStart="10dp"
+                        android:paddingTop="4dp"
+                        android:paddingEnd="10dp"
+                        android:paddingBottom="4dp">
+
+                        <View
+                            android:layout_width="6dp"
+                            android:layout_height="6dp"
+                            android:background="@drawable/bg_settings_button"
+                            android:backgroundTint="#00E676" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:text="ONLINE"
+                            android:textAppearance="?attr/textAppearanceLabelSmall"
+                            android:textColor="#00E676"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </RelativeLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Resolution Quality Selector -->
             <TextView
-                android:id="@+id/tvStreamStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="10dp"
-                android:text="@string/hud_status_online"
+                android:layout_marginTop="24dp"
+                android:text="STREAM QUALITY"
                 android:textAppearance="?attr/textAppearanceLabelMedium"
-                android:textColor="#E0FFFFFF"
-                android:textSize="12sp"
+                android:textColor="#8A8DFF"
                 android:textStyle="bold" />
 
-            <!-- Reconnect Button -->
-            <ImageButton
-                android:id="@+id/btnReconnect"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/btn_reconnect"
-                android:padding="6dp"
-                android:src="@drawable/ic_settings"
-                app:tint="#D9FFFFFF" />
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/toggleResolution"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:checkedButton="@id/btnRes1080p"
+                app:selectionRequired="true"
+                app:singleSelection="true">
 
-            <!-- Settings / Instance Manager Button -->
-            <ImageButton
-                android:id="@+id/btnSettings"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginStart="4dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/settings_title"
-                android:padding="6dp"
-                android:src="@drawable/ic_settings"
-                app:tint="#D9FFFFFF" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRes1080p"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="1080p FHD"
+                    android:textColor="#FFFFFF"
+                    app:strokeColor="#8A8DFF" />
 
-            <!-- Exit Stream / Disconnect Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnExitStream"
-                style="@style/Widget.Material3.Button.TextButton"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRes720p"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="720p HD"
+                    android:textColor="#A0A5C0"
+                    app:strokeColor="#2E3054" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRes480p"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="480p SD"
+                    android:textColor="#A0A5C0"
+                    app:strokeColor="#2E3054" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <!-- Instances Section Header -->
+            <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:layout_marginStart="4dp"
-                android:minWidth="0dp"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:text="Exit"
-                android:textColor="#FF5252"
-                android:textSize="12sp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="READY INSTANCES"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:textColor="#8A8DFF"
                 android:textStyle="bold" />
+
+            <!-- INSTANCE CARD 1 (1080p Ready) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardInstance1Dash"
+                style="@style/Widget.Material3.CardView.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardBackgroundColor="#1A1B2E"
+                app:cardCornerRadius="16dp"
+                app:strokeColor="#8A8DFF"
+                app:strokeWidth="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Redroid Android 13.0 #1"
+                                android:textAppearance="?attr/textAppearanceTitleMedium"
+                                android:textColor="#FFFFFF"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="1080p FHD • 60 FPS • Ultra Low Latency"
+                                android:textAppearance="?attr/textAppearanceBodySmall"
+                                android:textColor="#00E676" />
+                        </LinearLayout>
+
+                        <!-- Ready Badge -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/bg_settings_button"
+                            android:backgroundTint="#00E676"
+                            android:paddingStart="8dp"
+                            android:paddingTop="3dp"
+                            android:paddingEnd="8dp"
+                            android:paddingBottom="3dp"
+                            android:text="READY"
+                            android:textAppearance="?attr/textAppearanceLabelSmall"
+                            android:textColor="#000000"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+
+                    <!-- Connect Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnConnectDash1"
+                        style="@style/Widget.Material3.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="16dp"
+                        android:text="Connect Stream (1080p)"
+                        android:textColor="#FFFFFF"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        app:backgroundTint="#6200EE"
+                        app:cornerRadius="12dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- INSTANCE CARD 2 (Secondary Ready) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardInstance2Dash"
+                style="@style/Widget.Material3.CardView.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardBackgroundColor="#141524"
+                app:cardCornerRadius="16dp"
+                app:strokeColor="#2E3054">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Redroid Android 13.0 #2"
+                                android:textAppearance="?attr/textAppearanceTitleMedium"
+                                android:textColor="#FFFFFF"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="720p HD • 60 FPS • Active"
+                                android:textAppearance="?attr/textAppearanceBodySmall"
+                                android:textColor="#A0A5C0" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/bg_settings_button"
+                            android:backgroundTint="#33FFFFFF"
+                            android:paddingStart="8dp"
+                            android:paddingTop="3dp"
+                            android:paddingEnd="8dp"
+                            android:paddingBottom="3dp"
+                            android:text="READY"
+                            android:textAppearance="?attr/textAppearanceLabelSmall"
+                            android:textColor="#FFFFFF"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnConnectDash2"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="16dp"
+                        android:text="Connect Stream"
+                        android:textColor="#FFFFFF"
+                        android:textSize="15sp"
+                        app:cornerRadius="12dp"
+                        app:strokeColor="#2E3054" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </ScrollView>
+
+    <!-- VIEW 2: Fullscreen Scrcpy Video Stream Container (Shown when Connected) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/streamContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <android.webkit.WebView
+            android:id="@+id/webView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:overScrollMode="never"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Floating Stream Control HUD -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardHudBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            app:cardBackgroundColor="#B3000000"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="6dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:strokeColor="#33FFFFFF"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="4dp">
+
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:background="@drawable/bg_settings_button"
+                    android:backgroundTint="#00E676" />
+
+                <TextView
+                    android:id="@+id/tvStreamStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="10dp"
+                    android:text="1080p | 60 FPS"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="#E0FFFFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/btnReconnect"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/btn_reconnect"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_settings"
+                    app:tint="#D9FFFFFF" />
+
+                <ImageButton
+                    android:id="@+id/btnSettings"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="4dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/settings_title"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_settings"
+                    app:tint="#D9FFFFFF" />
+
+                <!-- Disconnect / Back to Dashboard -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnExitStream"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="4dp"
+                    android:minWidth="0dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="Disconnect"
+                    android:textColor="#FF5252"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

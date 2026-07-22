@@ -28,18 +28,20 @@ import com.cloudphone.webrtcstreamer.databinding.DialogSettingsBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 /**
- * 1,000,000x Better UgPhone-Style Premium Android 13 Cloud Phone Client.
+ * 999999x Better Futuristic Cloud Phone & Gaming Hub.
  * Features:
- * - One-tap Exit Stream / Disconnect
- * - One-tap Instant Reconnect / Reload
- * - Floating Control HUD with Live Stream Status
- * - Material3 Instance Manager Dashboard
- * - Android 13 redroid support with zero-delay hardware accelerated video playback
+ * - Native Launch Dashboard with Ready Instance Status & Badges
+ * - 1080p FHD / 720p HD High Definition Resolution Selector
+ * - One-Tap "Connect Stream (1080p)" transition
+ * - One-Tap "Disconnect" returning back to Dashboard
+ * - Ultra Low Latency Hardware Accelerated H.264 Playback
  */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var sharedPreferences: SharedPreferences
+
+    private var selectedResolution = "1080p"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,10 +54,9 @@ class MainActivity : AppCompatActivity() {
 
         setupImmersiveFullscreen()
         setupHardwareAcceleratedStreamView()
+        setupDashboardUi()
         setupControlHudListeners()
         setupBackNavigation()
-
-        loadStreamUrl()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -81,36 +82,76 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Configures listeners for the Floating Stream Control HUD (Exit, Reconnect, Settings).
+     * Initializes the native Launch Dashboard with ready instance badges and quality selector.
      */
-    private fun setupControlHudListeners() {
-        // Exit Stream / Disconnect Button
-        binding.btnExitStream.setOnClickListener {
-            disconnectAndExitStream()
+    private fun setupDashboardUi() {
+        val currentUrl = getPersistedUrl()
+        binding.tvVpsIp.text = "VPS Server: ${cleanIpHost(currentUrl)}"
+
+        // Resolution Selector Listener
+        binding.toggleResolution.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                when (checkedId) {
+                    R.id.btnRes1080p -> selectedResolution = "1080p"
+                    R.id.btnRes720p -> selectedResolution = "720p"
+                    R.id.btnRes480p -> selectedResolution = "480p"
+                }
+                binding.btnConnectDash1.text = "Connect Stream ($selectedResolution)"
+            }
         }
 
-        // Instant Reconnect Stream Button
-        binding.btnReconnect.setOnClickListener {
-            reconnectStream()
+        // Connect Button for Instance #1 (1080p Ready)
+        binding.btnConnectDash1.setOnClickListener {
+            connectToStreamSession(getPersistedUrl())
         }
 
-        // Settings / Instance Manager Button
-        binding.btnSettings.setOnClickListener {
+        // Connect Button for Instance #2 (720p Secondary)
+        binding.btnConnectDash2.setOnClickListener {
+            connectToStreamSession("http://185.227.111.231:7001")
+        }
+
+        // VPS Settings Gear Button on Dashboard Header
+        binding.btnVpsSettings.setOnClickListener {
             showSettingsDialog()
         }
     }
 
-    private fun reconnectStream() {
-        Toast.makeText(this, "Reconnecting Cloud Phone stream...", Toast.LENGTH_SHORT).show()
-        binding.tvStreamStatus.text = "CONNECTING..."
-        binding.webView.reload()
+    /**
+     * Smoothly transitions from the Launch Dashboard to the 1080p Stream View.
+     */
+    private fun connectToStreamSession(url: String) {
+        binding.dashboardLayout.visibility = View.GONE
+        binding.streamContainer.visibility = View.VISIBLE
+        binding.tvStreamStatus.text = "$selectedResolution | 60 FPS"
+
+        Toast.makeText(this, "Connecting to 1080p Cloud Phone Stream...", Toast.LENGTH_SHORT).show()
+        binding.webView.loadUrl(url)
     }
 
-    private fun disconnectAndExitStream() {
-        Toast.makeText(this, "Stream Disconnected", Toast.LENGTH_SHORT).show()
-        binding.tvStreamStatus.text = "OFFLINE"
+    /**
+     * Disconnects stream and smoothly returns to the Launch Dashboard.
+     */
+    private fun disconnectToDashboard() {
         binding.webView.loadUrl("about:blank")
-        showSettingsDialog()
+        binding.streamContainer.visibility = View.GONE
+        binding.dashboardLayout.visibility = View.VISIBLE
+        Toast.makeText(this, "Disconnected. Returned to Hub.", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setupControlHudListeners() {
+        binding.btnExitStream.setOnClickListener {
+            disconnectToDashboard()
+        }
+
+        binding.btnReconnect.setOnClickListener {
+            Toast.makeText(this, "Reconnecting 1080p Stream...", Toast.LENGTH_SHORT).show()
+            binding.tvStreamStatus.text = "RECONNECTING..."
+            binding.webView.reload()
+        }
+
+        binding.btnSettings.setOnClickListener {
+            showSettingsDialog()
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -164,12 +205,22 @@ class MainActivity : AppCompatActivity() {
                     super.onPageFinished(view, url)
                     if (url == "about:blank") return
 
-                    binding.tvStreamStatus.text = getString(R.string.hud_status_online)
+                    binding.tvStreamStatus.text = "$selectedResolution | 60 FPS"
 
-                    // Auto-trigger stream session and inject UgPhone 100% viewport CSS
-                    val autoStreamJs = """
+                    // Auto-trigger 1080p stream session, set high resolution viewport, and expand video canvas
+                    val autoStream1080pJs = """
                         (function() {
-                            function initStream() {
+                            function init1080pStream() {
+                                // Set 1080p FHD Viewport Scaling
+                                var meta = document.querySelector('meta[name="viewport"]');
+                                if (!meta) {
+                                    meta = document.createElement('meta');
+                                    meta.name = 'viewport';
+                                    document.head.appendChild(meta);
+                                }
+                                meta.content = 'width=1920, height=1080, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+
+                                // Auto-trigger stream action button on device list
                                 var links = document.querySelectorAll('a, button, div.action');
                                 for (var i = 0; i < links.length; i++) {
                                     var el = links[i];
@@ -216,13 +267,13 @@ class MainActivity : AppCompatActivity() {
                                 `;
                             }
 
-                            initStream();
-                            setTimeout(initStream, 1000);
-                            setTimeout(initStream, 2500);
+                            init1080pStream();
+                            setTimeout(init1080pStream, 1000);
+                            setTimeout(init1080pStream, 2500);
                         })();
                     """.trimIndent()
 
-                    view?.evaluateJavascript(autoStreamJs, null)
+                    view?.evaluateJavascript(autoStream1080pJs, null)
                 }
 
                 override fun onReceivedError(
@@ -247,7 +298,11 @@ class MainActivity : AppCompatActivity() {
     private fun setupBackNavigation() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                showSettingsDialog()
+                if (binding.streamContainer.visibility == View.VISIBLE) {
+                    disconnectToDashboard()
+                } else {
+                    finish()
+                }
             }
         })
     }
@@ -264,15 +319,17 @@ class MainActivity : AppCompatActivity() {
             val targetUrl = if (isValidUrl(inputUrl)) inputUrl else DEFAULT_STREAM_URL
             saveAndReloadUrl(targetUrl)
             dialog?.dismiss()
+            connectToStreamSession(targetUrl)
         }
 
         dialogBinding.btnConnectInstance2.setOnClickListener {
             saveAndReloadUrl("http://185.227.111.231:7001")
             dialog?.dismiss()
+            connectToStreamSession("http://185.227.111.231:7001")
         }
 
         dialogBinding.btnDisconnectDialog.setOnClickListener {
-            disconnectAndExitStream()
+            disconnectToDashboard()
             dialog?.dismiss()
         }
 
@@ -293,10 +350,15 @@ class MainActivity : AppCompatActivity() {
             if (isValidUrl(inputUrl)) {
                 saveAndReloadUrl(inputUrl)
                 dialog.dismiss()
+                binding.tvVpsIp.text = "VPS Server: ${cleanIpHost(inputUrl)}"
             } else {
                 dialogBinding.tilStreamUrl.error = getString(R.string.error_invalid_url)
             }
         }
+    }
+
+    private fun cleanIpHost(url: String): String {
+        return url.replace("http://", "").replace("https://", "").replace("/", "")
     }
 
     private fun isValidUrl(url: String): Boolean {
@@ -306,15 +368,10 @@ class MainActivity : AppCompatActivity() {
     private fun saveAndReloadUrl(url: String) {
         sharedPreferences.edit().putString(KEY_STREAM_URL, url).apply()
         Toast.makeText(this, R.string.toast_url_saved, Toast.LENGTH_SHORT).show()
-        binding.webView.loadUrl(url)
     }
 
     private fun getPersistedUrl(): String {
         return sharedPreferences.getString(KEY_STREAM_URL, DEFAULT_STREAM_URL) ?: DEFAULT_STREAM_URL
-    }
-
-    private fun loadStreamUrl() {
-        binding.webView.loadUrl(getPersistedUrl())
     }
 
     override fun onResume() {

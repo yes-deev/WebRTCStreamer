@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.ImageButton;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +15,7 @@ import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.cloudphone.webrtcstreamer.R;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.card.MaterialCardView;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -24,38 +26,92 @@ public final class ActivityMainBinding implements ViewBinding {
   private final ConstraintLayout rootView;
 
   @NonNull
+  public final MaterialButton btnConnectDash1;
+
+  @NonNull
+  public final MaterialButton btnConnectDash2;
+
+  @NonNull
   public final MaterialButton btnExitStream;
 
   @NonNull
   public final ImageButton btnReconnect;
 
   @NonNull
+  public final MaterialButton btnRes1080p;
+
+  @NonNull
+  public final MaterialButton btnRes480p;
+
+  @NonNull
+  public final MaterialButton btnRes720p;
+
+  @NonNull
   public final ImageButton btnSettings;
+
+  @NonNull
+  public final MaterialButton btnVpsSettings;
 
   @NonNull
   public final MaterialCardView cardHudBar;
 
   @NonNull
+  public final MaterialCardView cardInstance1Dash;
+
+  @NonNull
+  public final MaterialCardView cardInstance2Dash;
+
+  @NonNull
+  public final ScrollView dashboardLayout;
+
+  @NonNull
   public final ConstraintLayout rootLayout;
+
+  @NonNull
+  public final ConstraintLayout streamContainer;
+
+  @NonNull
+  public final MaterialButtonToggleGroup toggleResolution;
 
   @NonNull
   public final TextView tvStreamStatus;
 
   @NonNull
+  public final TextView tvVpsIp;
+
+  @NonNull
   public final WebView webView;
 
   private ActivityMainBinding(@NonNull ConstraintLayout rootView,
+      @NonNull MaterialButton btnConnectDash1, @NonNull MaterialButton btnConnectDash2,
       @NonNull MaterialButton btnExitStream, @NonNull ImageButton btnReconnect,
-      @NonNull ImageButton btnSettings, @NonNull MaterialCardView cardHudBar,
-      @NonNull ConstraintLayout rootLayout, @NonNull TextView tvStreamStatus,
-      @NonNull WebView webView) {
+      @NonNull MaterialButton btnRes1080p, @NonNull MaterialButton btnRes480p,
+      @NonNull MaterialButton btnRes720p, @NonNull ImageButton btnSettings,
+      @NonNull MaterialButton btnVpsSettings, @NonNull MaterialCardView cardHudBar,
+      @NonNull MaterialCardView cardInstance1Dash, @NonNull MaterialCardView cardInstance2Dash,
+      @NonNull ScrollView dashboardLayout, @NonNull ConstraintLayout rootLayout,
+      @NonNull ConstraintLayout streamContainer,
+      @NonNull MaterialButtonToggleGroup toggleResolution, @NonNull TextView tvStreamStatus,
+      @NonNull TextView tvVpsIp, @NonNull WebView webView) {
     this.rootView = rootView;
+    this.btnConnectDash1 = btnConnectDash1;
+    this.btnConnectDash2 = btnConnectDash2;
     this.btnExitStream = btnExitStream;
     this.btnReconnect = btnReconnect;
+    this.btnRes1080p = btnRes1080p;
+    this.btnRes480p = btnRes480p;
+    this.btnRes720p = btnRes720p;
     this.btnSettings = btnSettings;
+    this.btnVpsSettings = btnVpsSettings;
     this.cardHudBar = cardHudBar;
+    this.cardInstance1Dash = cardInstance1Dash;
+    this.cardInstance2Dash = cardInstance2Dash;
+    this.dashboardLayout = dashboardLayout;
     this.rootLayout = rootLayout;
+    this.streamContainer = streamContainer;
+    this.toggleResolution = toggleResolution;
     this.tvStreamStatus = tvStreamStatus;
+    this.tvVpsIp = tvVpsIp;
     this.webView = webView;
   }
 
@@ -86,6 +142,18 @@ public final class ActivityMainBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.btnConnectDash1;
+      MaterialButton btnConnectDash1 = ViewBindings.findChildViewById(rootView, id);
+      if (btnConnectDash1 == null) {
+        break missingId;
+      }
+
+      id = R.id.btnConnectDash2;
+      MaterialButton btnConnectDash2 = ViewBindings.findChildViewById(rootView, id);
+      if (btnConnectDash2 == null) {
+        break missingId;
+      }
+
       id = R.id.btnExitStream;
       MaterialButton btnExitStream = ViewBindings.findChildViewById(rootView, id);
       if (btnExitStream == null) {
@@ -98,9 +166,33 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.btnRes1080p;
+      MaterialButton btnRes1080p = ViewBindings.findChildViewById(rootView, id);
+      if (btnRes1080p == null) {
+        break missingId;
+      }
+
+      id = R.id.btnRes480p;
+      MaterialButton btnRes480p = ViewBindings.findChildViewById(rootView, id);
+      if (btnRes480p == null) {
+        break missingId;
+      }
+
+      id = R.id.btnRes720p;
+      MaterialButton btnRes720p = ViewBindings.findChildViewById(rootView, id);
+      if (btnRes720p == null) {
+        break missingId;
+      }
+
       id = R.id.btnSettings;
       ImageButton btnSettings = ViewBindings.findChildViewById(rootView, id);
       if (btnSettings == null) {
+        break missingId;
+      }
+
+      id = R.id.btnVpsSettings;
+      MaterialButton btnVpsSettings = ViewBindings.findChildViewById(rootView, id);
+      if (btnVpsSettings == null) {
         break missingId;
       }
 
@@ -110,11 +202,47 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.cardInstance1Dash;
+      MaterialCardView cardInstance1Dash = ViewBindings.findChildViewById(rootView, id);
+      if (cardInstance1Dash == null) {
+        break missingId;
+      }
+
+      id = R.id.cardInstance2Dash;
+      MaterialCardView cardInstance2Dash = ViewBindings.findChildViewById(rootView, id);
+      if (cardInstance2Dash == null) {
+        break missingId;
+      }
+
+      id = R.id.dashboardLayout;
+      ScrollView dashboardLayout = ViewBindings.findChildViewById(rootView, id);
+      if (dashboardLayout == null) {
+        break missingId;
+      }
+
       ConstraintLayout rootLayout = (ConstraintLayout) rootView;
+
+      id = R.id.streamContainer;
+      ConstraintLayout streamContainer = ViewBindings.findChildViewById(rootView, id);
+      if (streamContainer == null) {
+        break missingId;
+      }
+
+      id = R.id.toggleResolution;
+      MaterialButtonToggleGroup toggleResolution = ViewBindings.findChildViewById(rootView, id);
+      if (toggleResolution == null) {
+        break missingId;
+      }
 
       id = R.id.tvStreamStatus;
       TextView tvStreamStatus = ViewBindings.findChildViewById(rootView, id);
       if (tvStreamStatus == null) {
+        break missingId;
+      }
+
+      id = R.id.tvVpsIp;
+      TextView tvVpsIp = ViewBindings.findChildViewById(rootView, id);
+      if (tvVpsIp == null) {
         break missingId;
       }
 
@@ -124,8 +252,10 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityMainBinding((ConstraintLayout) rootView, btnExitStream, btnReconnect,
-          btnSettings, cardHudBar, rootLayout, tvStreamStatus, webView);
+      return new ActivityMainBinding((ConstraintLayout) rootView, btnConnectDash1, btnConnectDash2,
+          btnExitStream, btnReconnect, btnRes1080p, btnRes480p, btnRes720p, btnSettings,
+          btnVpsSettings, cardHudBar, cardInstance1Dash, cardInstance2Dash, dashboardLayout,
+          rootLayout, streamContainer, toggleResolution, tvStreamStatus, tvVpsIp, webView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));
