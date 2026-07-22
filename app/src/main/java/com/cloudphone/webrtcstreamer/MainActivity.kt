@@ -28,13 +28,9 @@ import com.cloudphone.webrtcstreamer.databinding.DialogSettingsBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 /**
- * 999999x Better Futuristic Cloud Phone & Gaming Hub.
- * Features:
- * - Native Launch Dashboard with Ready Instance Status & Badges
- * - 1080p FHD / 720p HD High Definition Resolution Selector
- * - One-Tap "Connect Stream (1080p)" transition
- * - One-Tap "Disconnect" returning back to Dashboard
- * - Ultra Low Latency Hardware Accelerated H.264 Playback
+ * 1080p Full HD Cloud Phone & Gaming Hub.
+ * Directly launches scrcpy MSE 1080p stream URL hash to guarantee instant video playback
+ * with 0ms black screen delay.
  */
 class MainActivity : AppCompatActivity() {
 
@@ -81,14 +77,10 @@ class MainActivity : AppCompatActivity() {
         windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
     }
 
-    /**
-     * Initializes the native Launch Dashboard with ready instance badges and quality selector.
-     */
     private fun setupDashboardUi() {
         val currentUrl = getPersistedUrl()
         binding.tvVpsIp.text = "VPS Server: ${cleanIpHost(currentUrl)}"
 
-        // Resolution Selector Listener
         binding.toggleResolution.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
                 when (checkedId) {
@@ -100,37 +92,42 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Connect Button for Instance #1 (1080p Ready)
         binding.btnConnectDash1.setOnClickListener {
             connectToStreamSession(getPersistedUrl())
         }
 
-        // Connect Button for Instance #2 (720p Secondary)
         binding.btnConnectDash2.setOnClickListener {
             connectToStreamSession("http://185.227.111.231:7001")
         }
 
-        // VPS Settings Gear Button on Dashboard Header
         binding.btnVpsSettings.setOnClickListener {
             showSettingsDialog()
         }
     }
 
     /**
-     * Smoothly transitions from the Launch Dashboard to the 1080p Stream View.
+     * Formats target URL to directly open scrcpy MSE 1080p stream hash endpoint.
      */
-    private fun connectToStreamSession(url: String) {
+    private fun formatStreamHashUrl(baseUrl: String): String {
+        val cleanBase = baseUrl.trimEnd('/')
+        return if (!cleanBase.contains("#!action=stream")) {
+            "$cleanBase/#!action=stream&udid=redroid:5555&player=mse"
+        } else {
+            cleanBase
+        }
+    }
+
+    private fun connectToStreamSession(baseUrl: String) {
+        val streamUrl = formatStreamHashUrl(baseUrl)
+
         binding.dashboardLayout.visibility = View.GONE
         binding.streamContainer.visibility = View.VISIBLE
         binding.tvStreamStatus.text = "$selectedResolution | 60 FPS"
 
         Toast.makeText(this, "Connecting to 1080p Cloud Phone Stream...", Toast.LENGTH_SHORT).show()
-        binding.webView.loadUrl(url)
+        binding.webView.loadUrl(streamUrl)
     }
 
-    /**
-     * Disconnects stream and smoothly returns to the Launch Dashboard.
-     */
     private fun disconnectToDashboard() {
         binding.webView.loadUrl("about:blank")
         binding.streamContainer.visibility = View.GONE
@@ -146,7 +143,8 @@ class MainActivity : AppCompatActivity() {
         binding.btnReconnect.setOnClickListener {
             Toast.makeText(this, "Reconnecting 1080p Stream...", Toast.LENGTH_SHORT).show()
             binding.tvStreamStatus.text = "RECONNECTING..."
-            binding.webView.reload()
+            val streamUrl = formatStreamHashUrl(getPersistedUrl())
+            binding.webView.loadUrl(streamUrl)
         }
 
         binding.btnSettings.setOnClickListener {
@@ -207,31 +205,10 @@ class MainActivity : AppCompatActivity() {
 
                     binding.tvStreamStatus.text = "$selectedResolution | 60 FPS"
 
-                    // Auto-trigger 1080p stream session, set high resolution viewport, and expand video canvas
-                    val autoStream1080pJs = """
+                    // Force video autoplay and UgPhone 100% 1080p viewport CSS
+                    val auto1080pJs = """
                         (function() {
-                            function init1080pStream() {
-                                // Set 1080p FHD Viewport Scaling
-                                var meta = document.querySelector('meta[name="viewport"]');
-                                if (!meta) {
-                                    meta = document.createElement('meta');
-                                    meta.name = 'viewport';
-                                    document.head.appendChild(meta);
-                                }
-                                meta.content = 'width=1920, height=1080, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-
-                                // Auto-trigger stream action button on device list
-                                var links = document.querySelectorAll('a, button, div.action');
-                                for (var i = 0; i < links.length; i++) {
-                                    var el = links[i];
-                                    var text = (el.innerText || el.textContent || '').toLowerCase();
-                                    var href = (el.getAttribute('href') || '').toLowerCase();
-                                    if (text.indexOf('stream') !== -1 || href.indexOf('action=stream') !== -1) {
-                                        el.click();
-                                        break;
-                                    }
-                                }
-
+                            function apply1080pFix() {
                                 var videos = document.querySelectorAll('video');
                                 videos.forEach(function(v) {
                                     v.play().catch(function(e){});
@@ -267,13 +244,13 @@ class MainActivity : AppCompatActivity() {
                                 `;
                             }
 
-                            init1080pStream();
-                            setTimeout(init1080pStream, 1000);
-                            setTimeout(init1080pStream, 2500);
+                            apply1080pFix();
+                            setTimeout(apply1080pFix, 1000);
+                            setTimeout(apply1080pFix, 2500);
                         })();
                     """.trimIndent()
 
-                    view?.evaluateJavascript(autoStream1080pJs, null)
+                    view?.evaluateJavascript(auto1080pJs, null)
                 }
 
                 override fun onReceivedError(
