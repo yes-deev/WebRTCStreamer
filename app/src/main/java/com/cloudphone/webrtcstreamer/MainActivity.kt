@@ -27,6 +27,11 @@ import com.cloudphone.webrtcstreamer.databinding.ActivityMainBinding
 import com.cloudphone.webrtcstreamer.databinding.DialogSettingsBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
+/**
+ * Cloud Phone / Gaming Streamer Activity (UgPhone style).
+ * Auto-triggers live scrcpy stream session, bypasses device list, and forces
+ * zero-latency H.264 video autoplay in 100% immersive fullscreen.
+ */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -93,7 +98,7 @@ class MainActivity : AppCompatActivity() {
                 useWideViewPort = true
                 loadWithOverviewMode = true
                 cacheMode = WebSettings.LOAD_NO_CACHE
-                userAgentString = userAgentString.replace("; wv", "")
+                userAgentString = "Mozilla/5.0 (Linux; Android 13; Pixel 7 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Mobile Safari/537.36"
             }
 
             webChromeClient = object : WebChromeClient() {
@@ -123,35 +128,68 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
-                    // Auto-expand scrcpy stream canvas to 100% fullscreen & remove black bars
-                    val cleanUpJs = """
+                    
+                    // Auto-click "Stream" button if on device list, force video play,
+                    // and expand video canvas to 100% UgPhone style fullscreen
+                    val autoStreamJs = """
                         (function() {
-                            var style = document.createElement('style');
-                            style.innerHTML = `
-                                header, nav, .header, .control-header, .device-list, .control-buttons, .navbar, .top-bar {
-                                    display: none !important;
+                            function initStream() {
+                                // Find and click the Stream action button on device list
+                                var links = document.querySelectorAll('a, button, div.action');
+                                for (var i = 0; i < links.length; i++) {
+                                    var el = links[i];
+                                    var text = (el.innerText || el.textContent || '').toLowerCase();
+                                    var href = (el.getAttribute('href') || '').toLowerCase();
+                                    if (text.indexOf('stream') !== -1 || href.indexOf('action=stream') !== -1) {
+                                        el.click();
+                                        break;
+                                    }
                                 }
-                                body, html {
-                                    margin: 0 !important;
-                                    padding: 0 !important;
-                                    background: #000000 !important;
-                                    overflow: hidden !important;
-                                    width: 100vw !important;
-                                    height: 100vh !important;
+
+                                // Force play on any video element
+                                var videos = document.querySelectorAll('video');
+                                videos.forEach(function(v) {
+                                    v.play().catch(function(e){});
+                                });
+
+                                // Apply UgPhone 100% Fullscreen CSS
+                                var style = document.getElementById('ugphone-style');
+                                if (!style) {
+                                    style = document.createElement('style');
+                                    style.id = 'ugphone-style';
+                                    document.head.appendChild(style);
                                 }
-                                canvas, video, .video-layer, #stream-canvas {
-                                    width: 100vw !important;
-                                    height: 100vh !important;
-                                    object-fit: contain !important;
-                                    position: absolute !important;
-                                    top: 0 !important;
-                                    left: 0 !important;
-                                }
-                            `;
-                            document.head.appendChild(style);
+                                style.innerHTML = `
+                                    html, body {
+                                        margin: 0 !important;
+                                        padding: 0 !important;
+                                        background: #000000 !important;
+                                        overflow: hidden !important;
+                                        width: 100vw !important;
+                                        height: 100vh !important;
+                                    }
+                                    header, nav, .header, .control-header, .device-list-header {
+                                        display: none !important;
+                                    }
+                                    canvas, video, .player, #stream-canvas, div[class*="player"] {
+                                        width: 100vw !important;
+                                        height: 100vh !important;
+                                        object-fit: contain !important;
+                                        position: absolute !important;
+                                        top: 0 !important;
+                                        left: 0 !important;
+                                        z-index: 999 !important;
+                                    }
+                                `;
+                            }
+
+                            initStream();
+                            setTimeout(initStream, 1000);
+                            setTimeout(initStream, 2500);
                         })();
                     """.trimIndent()
-                    view?.evaluateJavascript(cleanUpJs, null)
+
+                    view?.evaluateJavascript(autoStreamJs, null)
                 }
 
                 override fun onReceivedError(
@@ -163,7 +201,7 @@ class MainActivity : AppCompatActivity() {
                     if (request?.isForMainFrame == true) {
                         Toast.makeText(
                             this@MainActivity,
-                            "Unable to connect to VPS ${request.url}. Please check IP in settings.",
+                            "Unable to connect to VPS ${request.url}. Tap settings to check IP.",
                             Toast.LENGTH_LONG
                         ).show()
                     }
