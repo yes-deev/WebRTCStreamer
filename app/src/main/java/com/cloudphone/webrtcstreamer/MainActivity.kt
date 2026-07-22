@@ -194,6 +194,40 @@ class MainActivity : AppCompatActivity() {
                     // Bypass SSL verification for direct IP endpoints
                     handler?.proceed()
                 }
+
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    // Inject JS to strip all Web-Scrcpy UI headers, sidebars, and control panels,
+                    // expanding pure raw scrcpy video canvas to 100% fullscreen
+                    val cleanUpJs = """
+                        (function() {
+                            var style = document.createElement('style');
+                            style.innerHTML = `
+                                header, nav, .header, .control-header, .device-list, .control-buttons, .navbar, .top-bar {
+                                    display: none !important;
+                                }
+                                body, html {
+                                    margin: 0 !important;
+                                    padding: 0 !important;
+                                    background: #000000 !important;
+                                    overflow: hidden !important;
+                                    width: 100vw !important;
+                                    height: 100vh !important;
+                                }
+                                canvas, video, .video-layer, #stream-canvas {
+                                    width: 100vw !important;
+                                    height: 100vh !important;
+                                    object-fit: contain !important;
+                                    position: absolute !important;
+                                    top: 0 !important;
+                                    left: 0 !important;
+                                }
+                            `;
+                            document.head.appendChild(style);
+                        })();
+                    """.trimIndent()
+                    view?.evaluateJavascript(cleanUpJs, null)
+                }
             }
         }
     }
