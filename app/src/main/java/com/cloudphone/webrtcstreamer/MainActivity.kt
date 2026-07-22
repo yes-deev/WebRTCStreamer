@@ -66,10 +66,10 @@ class MainActivity : AppCompatActivity() {
         // Step 4: Check & Request Audio/Camera Permissions for WebRTC
         checkAndRequestPermissions()
 
-        // Step 5: Configure Hardware-Accelerated WebView
+        // Step 5: Configure Hardware-Accelerated WebView for Real Scrcpy Stream
         setupLowLatencyWebView()
 
-        // Step 6: Setup Floating Settings Button Listener
+        // Step 6: Setup Floating Settings & Instance Manager Button Listener
         binding.btnSettings.setOnClickListener {
             showSettingsDialog()
         }
@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         // Step 7: Handle System Back Gesture to prevent closing stream accidentally
         setupBackNavigation()
 
-        // Step 8: Load Configured VPS Stream URL
+        // Step 8: Load Configured VPS Stream URL (Default: 185.227.111.231:7000)
         loadStreamUrl()
     }
 
@@ -92,7 +92,6 @@ class MainActivity : AppCompatActivity() {
      * Configures Sticky Fullscreen mode hiding status bar, navigation bar, and display cutouts.
      */
     private fun setupImmersiveFullscreen() {
-        // Extend layout into display cutout (notch area) for API 28+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             window.attributes.layoutInDisplayCutoutMode =
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
@@ -128,7 +127,7 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Applies zero-delay, low-latency, hardware-accelerated WebView settings optimized for
-     * cloud phone / WebRTC video streaming.
+     * scrcpy / WebRTC video streaming.
      */
     @SuppressLint("SetJavaScriptEnabled")
     private fun setupLowLatencyWebView() {
@@ -149,7 +148,7 @@ class MainActivity : AppCompatActivity() {
                 domStorageEnabled = true
                 databaseEnabled = true
 
-                // Mixed content support for plain HTTP endpoints (e.g. http://192.168.x.x:8000)
+                // Mixed content support for plain HTTP VPS endpoints (e.g. http://185.227.111.231:7000)
                 mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
 
                 // WebRTC media playback without user gesture requirement
@@ -177,7 +176,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            // WebViewClient: Keeps navigation inside app & bypasses SSL errors for local IP VPS
+            // WebViewClient: Keeps navigation inside app & bypasses SSL errors for direct IP VPS
             webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(
                     view: WebView?,
@@ -192,7 +191,7 @@ class MainActivity : AppCompatActivity() {
                     handler: SslErrorHandler?,
                     error: SslError?
                 ) {
-                    // Bypass SSL verification for direct IP endpoints and self-signed certs
+                    // Bypass SSL verification for direct IP endpoints
                     handler?.proceed()
                 }
             }
@@ -208,7 +207,6 @@ class MainActivity : AppCompatActivity() {
                 if (binding.webView.canGoBack()) {
                     binding.webView.goBack()
                 } else {
-                    // Show settings dialog on back press if at root stream URL
                     showSettingsDialog()
                 }
             }
@@ -216,17 +214,36 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Displays a Material3 dialog to configure and persist the VPS Stream URL.
+     * Displays a Material3 dialog to configure VPS IP (185.227.111.231) and select active Android instances.
      */
     private fun showSettingsDialog() {
         val dialogBinding = DialogSettingsBinding.inflate(layoutInflater)
         val currentUrl = getPersistedUrl()
         dialogBinding.etStreamUrl.setText(currentUrl)
 
-        val dialog = MaterialAlertDialogBuilder(this)
+        var dialog: AlertDialog? = null
+
+        // Connect button handler for Instance #1
+        dialogBinding.btnConnectInstance1.setOnClickListener {
+            val baseIp = dialogBinding.etStreamUrl.text.toString().trim()
+            val targetUrl = if (isValidUrl(baseIp)) baseIp else DEFAULT_STREAM_URL
+            saveAndReloadUrl(targetUrl)
+            dialog?.dismiss()
+        }
+
+        // Connect button handler for Instance #2 (Secondary Port 7001)
+        dialogBinding.btnConnectInstance2.setOnClickListener {
+            val baseIp = dialogBinding.etStreamUrl.text.toString().trim()
+            val cleanIp = baseIp.replace("7000", "7001")
+            val targetUrl = if (isValidUrl(cleanIp)) cleanIp else "http://185.227.111.231:7001"
+            saveAndReloadUrl(targetUrl)
+            dialog?.dismiss()
+        }
+
+        dialog = MaterialAlertDialogBuilder(this)
             .setTitle(R.string.settings_title)
             .setView(dialogBinding.root)
-            .setPositiveButton(R.string.btn_save, null) // Custom click listener for validation
+            .setPositiveButton(R.string.btn_save, null)
             .setNegativeButton(R.string.btn_cancel, null)
             .setNeutralButton(R.string.btn_reset) { _, _ ->
                 saveAndReloadUrl(DEFAULT_STREAM_URL)
@@ -235,7 +252,7 @@ class MainActivity : AppCompatActivity() {
 
         dialog.show()
 
-        // Override PositiveButton to enforce URL validation before closing dialog
+        // Positive button: Save VPS IP & Reload
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             val inputUrl = dialogBinding.etStreamUrl.text.toString().trim()
             if (isValidUrl(inputUrl)) {
@@ -264,7 +281,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Reads the persisted URL or returns default.
+     * Reads the persisted URL or returns default (185.227.111.231:7000).
      */
     private fun getPersistedUrl(): String {
         return sharedPreferences.getString(KEY_STREAM_URL, DEFAULT_STREAM_URL) ?: DEFAULT_STREAM_URL
@@ -296,6 +313,6 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val PREFS_NAME = "webrtc_streamer_prefs"
         private const val KEY_STREAM_URL = "vps_stream_url"
-        private const val DEFAULT_STREAM_URL = "http://10.0.2.2:7000"
+        private const val DEFAULT_STREAM_URL = "http://185.227.111.231:7000"
     }
 }

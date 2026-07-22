@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.cloudphone.webrtcstreamer.R;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import java.lang.NullPointerException;
@@ -22,6 +24,18 @@ public final class DialogSettingsBinding implements ViewBinding {
   private final LinearLayout rootView;
 
   @NonNull
+  public final MaterialButton btnConnectInstance1;
+
+  @NonNull
+  public final MaterialButton btnConnectInstance2;
+
+  @NonNull
+  public final MaterialCardView cardInstance1;
+
+  @NonNull
+  public final MaterialCardView cardInstance2;
+
+  @NonNull
   public final TextInputEditText etStreamUrl;
 
   @NonNull
@@ -31,9 +45,15 @@ public final class DialogSettingsBinding implements ViewBinding {
   public final TextView tvSettingsDescription;
 
   private DialogSettingsBinding(@NonNull LinearLayout rootView,
+      @NonNull MaterialButton btnConnectInstance1, @NonNull MaterialButton btnConnectInstance2,
+      @NonNull MaterialCardView cardInstance1, @NonNull MaterialCardView cardInstance2,
       @NonNull TextInputEditText etStreamUrl, @NonNull TextInputLayout tilStreamUrl,
       @NonNull TextView tvSettingsDescription) {
     this.rootView = rootView;
+    this.btnConnectInstance1 = btnConnectInstance1;
+    this.btnConnectInstance2 = btnConnectInstance2;
+    this.cardInstance1 = cardInstance1;
+    this.cardInstance2 = cardInstance2;
     this.etStreamUrl = etStreamUrl;
     this.tilStreamUrl = tilStreamUrl;
     this.tvSettingsDescription = tvSettingsDescription;
@@ -66,6 +86,30 @@ public final class DialogSettingsBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.btnConnectInstance1;
+      MaterialButton btnConnectInstance1 = ViewBindings.findChildViewById(rootView, id);
+      if (btnConnectInstance1 == null) {
+        break missingId;
+      }
+
+      id = R.id.btnConnectInstance2;
+      MaterialButton btnConnectInstance2 = ViewBindings.findChildViewById(rootView, id);
+      if (btnConnectInstance2 == null) {
+        break missingId;
+      }
+
+      id = R.id.cardInstance1;
+      MaterialCardView cardInstance1 = ViewBindings.findChildViewById(rootView, id);
+      if (cardInstance1 == null) {
+        break missingId;
+      }
+
+      id = R.id.cardInstance2;
+      MaterialCardView cardInstance2 = ViewBindings.findChildViewById(rootView, id);
+      if (cardInstance2 == null) {
+        break missingId;
+      }
+
       id = R.id.etStreamUrl;
       TextInputEditText etStreamUrl = ViewBindings.findChildViewById(rootView, id);
       if (etStreamUrl == null) {
@@ -84,7 +128,8 @@ public final class DialogSettingsBinding implements ViewBinding {
         break missingId;
       }
 
-      return new DialogSettingsBinding((LinearLayout) rootView, etStreamUrl, tilStreamUrl,
+      return new DialogSettingsBinding((LinearLayout) rootView, btnConnectInstance1,
+          btnConnectInstance2, cardInstance1, cardInstance2, etStreamUrl, tilStreamUrl,
           tvSettingsDescription);
     }
     String missingId = rootView.getResources().getResourceName(id);

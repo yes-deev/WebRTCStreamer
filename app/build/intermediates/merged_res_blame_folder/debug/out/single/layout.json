@@ -1,7 +1,7 @@
 [
     {
-        "merged": "com.cloudphone.webrtcstreamer.app-mergeDebugResources-33:/layout/activity_main.xml",
-        "source": "com.cloudphone.webrtcstreamer.app-main-36:/layout/activity_main.xml"
+        "merged": "com.cloudphone.webrtcstreamer.app-mergeDebugResources-33:/layout/dialog_settings.xml",
+        "source": "com.cloudphone.webrtcstreamer.app-main-36:/layout/dialog_settings.xml"
     },
     {
         "merged": "/root/.gradle/daemon/8.5/com.cloudphone.webrtcstreamer.app-mergeDebugResources-33:/layout/activity_main.xml",

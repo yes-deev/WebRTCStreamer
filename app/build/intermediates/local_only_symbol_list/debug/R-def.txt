@@ -9,7 +9,11 @@ color teal_700
 color white
 drawable bg_settings_button
 drawable ic_settings
+id btnConnectInstance1
+id btnConnectInstance2
 id btnSettings
+id cardInstance1
+id cardInstance2
 id etStreamUrl
 id rootLayout
 id tilStreamUrl
@@ -19,9 +23,14 @@ layout activity_main
 layout dialog_settings
 string app_name
 string btn_cancel
+string btn_connect
 string btn_reset
 string btn_save
 string error_invalid_url
+string instance_2
+string instance_default
+string instance_status_online
+string instances_title
 string permission_denied_toast
 string settings_description
 string settings_title

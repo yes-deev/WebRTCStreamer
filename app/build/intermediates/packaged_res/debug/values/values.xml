@@ -9,14 +9,19 @@
     <color name="white">#FFFFFFFF</color>
     <string name="app_name">WebRTC Streamer</string>
     <string name="btn_cancel">Cancel</string>
-    <string name="btn_reset">Reset Default</string>
-    <string name="btn_save">Save &amp; Connect</string>
-    <string name="error_invalid_url">Please enter a valid URL starting with http:// or https://</string>
+    <string name="btn_connect">Connect to Stream</string>
+    <string name="btn_reset">Reset Default IP</string>
+    <string name="btn_save">Save VPS IP</string>
+    <string name="error_invalid_url">Please enter a valid VPS IP or URL starting with http:// or https://</string>
+    <string name="instance_2">Redroid Instance #2 (Port 7001)</string>
+    <string name="instance_default">Redroid Instance #1 (Port 7000)</string>
+    <string name="instance_status_online">Online • Low Latency H.264</string>
+    <string name="instances_title">Active Android Instances</string>
     <string name="permission_denied_toast">Camera and Microphone permissions are required for full WebRTC functionality.</string>
-    <string name="settings_description">Enter the IP address or URL of your cloud phone / WebRTC stream instance (e.g. Redroid, ws-scrcpy).</string>
-    <string name="settings_title">Stream Settings</string>
-    <string name="stream_url_hint">VPS Stream URL</string>
-    <string name="toast_url_saved">Stream URL saved. Reloading stream...</string>
+    <string name="settings_description">Configure your Cloud Phone VPS IP (e.g. 185.227.111.231:7000) and select an Android instance to stream.</string>
+    <string name="settings_title">VPS &amp; Instance Settings</string>
+    <string name="stream_url_hint">VPS IP / Stream URL</string>
+    <string name="toast_url_saved">VPS IP updated. Connecting to instance...</string>
     <style name="Theme.WebRTCStreamer" parent="Theme.Material3.DayNight.NoActionBar">
         
         <item name="colorPrimary">@color/purple_500</item>
