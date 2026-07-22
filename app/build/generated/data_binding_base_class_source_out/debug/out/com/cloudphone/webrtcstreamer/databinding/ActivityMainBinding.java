@@ -2,9 +2,9 @@
 package com.cloudphone.webrtcstreamer.databinding;
 
 import android.view.LayoutInflater;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -27,15 +27,15 @@ public final class ActivityMainBinding implements ViewBinding {
   public final ConstraintLayout rootLayout;
 
   @NonNull
-  public final SurfaceView surfaceView;
+  public final WebView webView;
 
   private ActivityMainBinding(@NonNull ConstraintLayout rootView,
       @NonNull FloatingActionButton btnSettings, @NonNull ConstraintLayout rootLayout,
-      @NonNull SurfaceView surfaceView) {
+      @NonNull WebView webView) {
     this.rootView = rootView;
     this.btnSettings = btnSettings;
     this.rootLayout = rootLayout;
-    this.surfaceView = surfaceView;
+    this.webView = webView;
   }
 
   @Override
@@ -73,14 +73,13 @@ public final class ActivityMainBinding implements ViewBinding {
 
       ConstraintLayout rootLayout = (ConstraintLayout) rootView;
 
-      id = R.id.surfaceView;
-      SurfaceView surfaceView = ViewBindings.findChildViewById(rootView, id);
-      if (surfaceView == null) {
+      id = R.id.webView;
+      WebView webView = ViewBindings.findChildViewById(rootView, id);
+      if (webView == null) {
         break missingId;
       }
 
-      return new ActivityMainBinding((ConstraintLayout) rootView, btnSettings, rootLayout,
-          surfaceView);
+      return new ActivityMainBinding((ConstraintLayout) rootView, btnSettings, rootLayout, webView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

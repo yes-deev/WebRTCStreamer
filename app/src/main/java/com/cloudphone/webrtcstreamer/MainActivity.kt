@@ -3,12 +3,19 @@ package com.cloudphone.webrtcstreamer
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
-import android.view.MotionEvent
-import android.view.SurfaceHolder
 import android.view.View
 import android.view.WindowManager
+import android.webkit.PermissionRequest
+import android.webkit.SslErrorHandler
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
@@ -18,34 +25,16 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.cloudphone.webrtcstreamer.databinding.ActivityMainBinding
 import com.cloudphone.webrtcstreamer.databinding.DialogSettingsBinding
-import com.cloudphone.webrtcstreamer.scrcpy.ControlMessageWriter
-import com.cloudphone.webrtcstreamer.scrcpy.H264Decoder
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import java.io.InputStream
-import java.io.OutputStream
-import java.net.Socket
-import kotlin.concurrent.thread
 
-/**
- * 100% Native Pure Android Scrcpy Client Activity (Zero WebView / Zero Web dependencies).
- * Direct TCP socket connection -> Android MediaCodec hardware decoding -> SurfaceView rendering.
- */
-class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var sharedPreferences: SharedPreferences
 
-    private var socket: Socket? = null
-    private var decoder: H264Decoder? = null
-    private var controlWriter: ControlMessageWriter? = null
-
-    @Volatile
-    private var isConnected = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Edge-to-Edge immersive window setup
         WindowCompat.setDecorFitsSystemWindows(window, false)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -53,16 +42,14 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
         sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
         setupImmersiveFullscreen()
-        setupNativeTouchEvents()
-
-        // Attach SurfaceHolder callback to native SurfaceView
-        binding.surfaceView.holder.addCallback(this)
+        setupHardwareAcceleratedStreamView()
 
         binding.btnSettings.setOnClickListener {
             showSettingsDialog()
         }
 
         setupBackNavigation()
+        loadStreamUrl()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -87,132 +74,132 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
         windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
     }
 
-    /**
-     * Native MotionEvent touch listener mapping user finger gestures directly to
-     * Scrcpy binary control packets.
-     */
-    @SuppressLint("ClickableViewAccessibility")
-    private fun setupNativeTouchEvents() {
-        binding.surfaceView.setOnTouchListener { v, event ->
-            val writer = controlWriter ?: return@setOnTouchListener false
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun setupHardwareAcceleratedStreamView() {
+        binding.webView.apply {
+            setLayerType(View.LAYER_TYPE_HARDWARE, null)
+            overScrollMode = View.OVER_SCROLL_NEVER
+            isNestedScrollingEnabled = false
+            isHapticFeedbackEnabled = false
 
-            val width = v.width
-            val height = v.height
-            val pointerCount = event.pointerCount
-
-            for (i in 0 until pointerCount) {
-                val pointerId = event.getPointerId(i).toLong()
-                val x = event.getX(i).toInt().coerceIn(0, width)
-                val y = event.getY(i).toInt().coerceIn(0, height)
-                val pressure = event.getPressure(i)
-
-                writer.sendTouchEvent(
-                    action = event.actionMasked,
-                    pointerId = pointerId,
-                    x = x,
-                    y = y,
-                    screenWidth = width,
-                    screenHeight = height,
-                    pressure = pressure
-                )
+            settings.apply {
+                javaScriptEnabled = true
+                domStorageEnabled = true
+                databaseEnabled = true
+                mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                mediaPlaybackRequiresUserGesture = false
+                allowFileAccess = true
+                allowContentAccess = true
+                useWideViewPort = true
+                loadWithOverviewMode = true
+                cacheMode = WebSettings.LOAD_NO_CACHE
+                userAgentString = userAgentString.replace("; wv", "")
             }
-            true
-        }
-    }
 
-    override fun surfaceCreated(holder: SurfaceHolder) {
-        connectToNativeScrcpyServer(holder)
-    }
-
-    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
-
-    override fun surfaceDestroyed(holder: SurfaceHolder) {
-        disconnectScrcpy()
-    }
-
-    /**
-     * Connects directly to the remote Scrcpy/Redroid instance via native TCP socket.
-     */
-    private fun connectToNativeScrcpyServer(holder: SurfaceHolder) {
-        disconnectScrcpy()
-
-        val hostAndPort = getPersistedHostAndPort()
-        val host = hostAndPort.first
-        val port = hostAndPort.second
-
-        thread(name = "NativeScrcpyConnector") {
-            try {
-                socket = Socket(host, port).apply {
-                    tcpNoDelay = true // Zero TCP buffering latency
-                    soTimeout = 0
-                }
-
-                val inputStream: InputStream = socket!!.getInputStream()
-                val outputStream: OutputStream = socket!!.getOutputStream()
-
-                controlWriter = ControlMessageWriter(outputStream)
-                decoder = H264Decoder(holder.surface)
-                decoder?.start(inputStream)
-
-                isConnected = true
-
-                runOnUiThread {
-                    Toast.makeText(
-                        this,
-                        "Connected to Scrcpy VPS: $host:$port",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                runOnUiThread {
-                    Toast.makeText(
-                        this,
-                        "Connection failed to $host:$port. Tap settings gear to check IP.",
-                        Toast.LENGTH_LONG
-                    ).show()
+            webChromeClient = object : WebChromeClient() {
+                override fun onPermissionRequest(request: PermissionRequest?) {
+                    runOnUiThread {
+                        request?.grant(request.resources)
+                    }
                 }
             }
-        }
-    }
 
-    private fun disconnectScrcpy() {
-        isConnected = false
-        try {
-            decoder?.stop()
-            socket?.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            decoder = null
-            socket = null
-            controlWriter = null
+            webViewClient = object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(
+                    view: WebView?,
+                    request: WebResourceRequest?
+                ): Boolean {
+                    return false
+                }
+
+                @SuppressLint("WebViewClientOnReceivedSslError")
+                override fun onReceivedSslError(
+                    view: WebView?,
+                    handler: SslErrorHandler?,
+                    error: SslError?
+                ) {
+                    handler?.proceed()
+                }
+
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    // Auto-expand scrcpy stream canvas to 100% fullscreen & remove black bars
+                    val cleanUpJs = """
+                        (function() {
+                            var style = document.createElement('style');
+                            style.innerHTML = `
+                                header, nav, .header, .control-header, .device-list, .control-buttons, .navbar, .top-bar {
+                                    display: none !important;
+                                }
+                                body, html {
+                                    margin: 0 !important;
+                                    padding: 0 !important;
+                                    background: #000000 !important;
+                                    overflow: hidden !important;
+                                    width: 100vw !important;
+                                    height: 100vh !important;
+                                }
+                                canvas, video, .video-layer, #stream-canvas {
+                                    width: 100vw !important;
+                                    height: 100vh !important;
+                                    object-fit: contain !important;
+                                    position: absolute !important;
+                                    top: 0 !important;
+                                    left: 0 !important;
+                                }
+                            `;
+                            document.head.appendChild(style);
+                        })();
+                    """.trimIndent()
+                    view?.evaluateJavascript(cleanUpJs, null)
+                }
+
+                override fun onReceivedError(
+                    view: WebView?,
+                    request: WebResourceRequest?,
+                    error: WebResourceError?
+                ) {
+                    super.onReceivedError(view, request, error)
+                    if (request?.isForMainFrame == true) {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Unable to connect to VPS ${request.url}. Please check IP in settings.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
         }
     }
 
     private fun setupBackNavigation() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                showSettingsDialog()
+                if (binding.webView.canGoBack()) {
+                    binding.webView.goBack()
+                } else {
+                    showSettingsDialog()
+                }
             }
         })
     }
 
     private fun showSettingsDialog() {
         val dialogBinding = DialogSettingsBinding.inflate(layoutInflater)
-        val currentIp = getPersistedIpString()
-        dialogBinding.etStreamUrl.setText(currentIp)
+        val currentUrl = getPersistedUrl()
+        dialogBinding.etStreamUrl.setText(currentUrl)
 
         var dialog: AlertDialog? = null
 
         dialogBinding.btnConnectInstance1.setOnClickListener {
-            val inputIp = dialogBinding.etStreamUrl.text.toString().trim()
-            saveAndReloadHost(inputIp)
+            val inputUrl = dialogBinding.etStreamUrl.text.toString().trim()
+            val targetUrl = if (isValidUrl(inputUrl)) inputUrl else DEFAULT_STREAM_URL
+            saveAndReloadUrl(targetUrl)
             dialog?.dismiss()
         }
 
         dialogBinding.btnConnectInstance2.setOnClickListener {
-            saveAndReloadHost("185.227.111.231:5556")
+            saveAndReloadUrl("http://185.227.111.231:7001")
             dialog?.dismiss()
         }
 
@@ -222,51 +209,60 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
             .setPositiveButton(R.string.btn_save, null)
             .setNegativeButton(R.string.btn_cancel, null)
             .setNeutralButton(R.string.btn_reset) { _, _ ->
-                saveAndReloadHost(DEFAULT_VPS_HOST)
+                saveAndReloadUrl(DEFAULT_STREAM_URL)
             }
             .create()
 
         dialog.show()
 
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-            val inputIp = dialogBinding.etStreamUrl.text.toString().trim()
-            if (inputIp.isNotEmpty()) {
-                saveAndReloadHost(inputIp)
+            val inputUrl = dialogBinding.etStreamUrl.text.toString().trim()
+            if (isValidUrl(inputUrl)) {
+                saveAndReloadUrl(inputUrl)
                 dialog.dismiss()
             } else {
-                dialogBinding.tilStreamUrl.error = "Please enter a valid IP address or host:port"
+                dialogBinding.tilStreamUrl.error = getString(R.string.error_invalid_url)
             }
         }
     }
 
-    private fun saveAndReloadHost(hostStr: String) {
-        sharedPreferences.edit().putString(KEY_VPS_HOST, hostStr).apply()
-        Toast.makeText(this, "VPS Host saved. Connecting...", Toast.LENGTH_SHORT).show()
-        if (binding.surfaceView.holder.surface.isValid) {
-            connectToNativeScrcpyServer(binding.surfaceView.holder)
-        }
+    private fun isValidUrl(url: String): Boolean {
+        return url.startsWith("http://") || url.startsWith("https://") || url.startsWith("ws://") || url.startsWith("wss://")
     }
 
-    private fun getPersistedIpString(): String {
-        return sharedPreferences.getString(KEY_VPS_HOST, DEFAULT_VPS_HOST) ?: DEFAULT_VPS_HOST
+    private fun saveAndReloadUrl(url: String) {
+        sharedPreferences.edit().putString(KEY_STREAM_URL, url).apply()
+        Toast.makeText(this, R.string.toast_url_saved, Toast.LENGTH_SHORT).show()
+        binding.webView.loadUrl(url)
     }
 
-    private fun getPersistedHostAndPort(): Pair<String, Int> {
-        val raw = getPersistedIpString().replace("http://", "").replace("https://", "").replace("/", "")
-        val parts = raw.split(":")
-        val host = parts.getOrNull(0) ?: "185.227.111.231"
-        val port = parts.getOrNull(1)?.toIntOrNull() ?: 5555
-        return Pair(host, port)
+    private fun getPersistedUrl(): String {
+        return sharedPreferences.getString(KEY_STREAM_URL, DEFAULT_STREAM_URL) ?: DEFAULT_STREAM_URL
+    }
+
+    private fun loadStreamUrl() {
+        binding.webView.loadUrl(getPersistedUrl())
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.webView.onResume()
+        applyImmersiveSystemBars()
+    }
+
+    override fun onPause() {
+        binding.webView.onPause()
+        super.onPause()
     }
 
     override fun onDestroy() {
-        disconnectScrcpy()
+        binding.webView.destroy()
         super.onDestroy()
     }
 
     companion object {
         private const val PREFS_NAME = "webrtc_streamer_prefs"
-        private const val KEY_VPS_HOST = "vps_stream_url"
-        private const val DEFAULT_VPS_HOST = "185.227.111.231:5555"
+        private const val KEY_STREAM_URL = "vps_stream_url"
+        private const val DEFAULT_STREAM_URL = "http://185.227.111.231:7000"
     }
 }

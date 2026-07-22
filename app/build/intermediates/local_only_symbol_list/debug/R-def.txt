@@ -16,9 +16,9 @@ id cardInstance1
 id cardInstance2
 id etStreamUrl
 id rootLayout
-id surfaceView
 id tilStreamUrl
 id tvSettingsDescription
+id webView
 layout activity_main
 layout dialog_settings
 string app_name
