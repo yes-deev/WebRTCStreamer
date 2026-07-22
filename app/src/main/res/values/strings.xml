@@ -1,17 +1,20 @@
 <resources>
-    <string name="app_name">WebRTC Streamer</string>
-    <string name="settings_title">VPS &amp; Instance Settings</string>
-    <string name="settings_description">Configure your Cloud Phone VPS IP (e.g. 185.227.111.231:7000) and select an Android instance to stream.</string>
-    <string name="stream_url_hint">VPS IP / Stream URL</string>
+    <string name="app_name">UgPhone WebRTC Cloud</string>
+    <string name="settings_title">Cloud Phone Dashboard &amp; VPS</string>
+    <string name="settings_description">Manage your Cloud Phone instances, configure VPS IP, and control stream sessions in real-time.</string>
+    <string name="stream_url_hint">VPS IP / Server URL (e.g. 185.227.111.231:7000)</string>
     <string name="btn_save">Save VPS IP</string>
-    <string name="btn_connect">Connect to Stream</string>
+    <string name="btn_connect">Connect Stream</string>
+    <string name="btn_reconnect">Reconnect Stream</string>
+    <string name="btn_exit_stream">Exit / Disconnect</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_reset">Reset Default IP</string>
-    <string name="instances_title">Active Android Instances</string>
+    <string name="instances_title">Active Cloud Phone Instances</string>
     <string name="error_invalid_url">Please enter a valid VPS IP or URL starting with http:// or https://</string>
-    <string name="toast_url_saved">VPS IP updated. Connecting to instance...</string>
+    <string name="toast_url_saved">VPS IP updated. Connecting...</string>
     <string name="permission_denied_toast">Camera and Microphone permissions are required for full WebRTC functionality.</string>
-    <string name="instance_default">Redroid Instance #1 (Port 7000)</string>
-    <string name="instance_2">Redroid Instance #2 (Port 7001)</string>
-    <string name="instance_status_online">Online • Low Latency H.264</string>
+    <string name="instance_android13">Redroid Android 13.0 (Port 7000)</string>
+    <string name="instance_android13_2">Redroid Android 13.0 #2 (Port 7001)</string>
+    <string name="instance_status_online">Online • 60 FPS • Low Latency</string>
+    <string name="hud_status_online">60 FPS | H.264</string>
 </resources>

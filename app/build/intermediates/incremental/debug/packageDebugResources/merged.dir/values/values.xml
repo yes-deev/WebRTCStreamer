@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="white">#FFFFFFFF</color>
+    <string name="app_name">UgPhone WebRTC Cloud</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_connect">Connect Stream</string>
+    <string name="btn_exit_stream">Exit / Disconnect</string>
+    <string name="btn_reconnect">Reconnect Stream</string>
+    <string name="btn_reset">Reset Default IP</string>
+    <string name="btn_save">Save VPS IP</string>
+    <string name="error_invalid_url">Please enter a valid VPS IP or URL starting with http:// or https://</string>
+    <string name="hud_status_online">60 FPS | H.264</string>
+    <string name="instance_android13">Redroid Android 13.0 (Port 7000)</string>
+    <string name="instance_android13_2">Redroid Android 13.0 #2 (Port 7001)</string>
+    <string name="instance_status_online">Online • 60 FPS • Low Latency</string>
+    <string name="instances_title">Active Cloud Phone Instances</string>
+    <string name="permission_denied_toast">Camera and Microphone permissions are required for full WebRTC functionality.</string>
+    <string name="settings_description">Manage your Cloud Phone instances, configure VPS IP, and control stream sessions in real-time.</string>
+    <string name="settings_title">Cloud Phone Dashboard &amp; VPS</string>
+    <string name="stream_url_hint">VPS IP / Server URL (e.g. 185.227.111.231:7000)</string>
+    <string name="toast_url_saved">VPS IP updated. Connecting...</string>
+    <style name="Theme.WebRTCStreamer" parent="Theme.Material3.DayNight.NoActionBar">
+        
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        
+        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:navigationBarColor">@color/black</item>
+        <item name="android:windowBackground">@color/black</item>
+    </style>
+</resources>

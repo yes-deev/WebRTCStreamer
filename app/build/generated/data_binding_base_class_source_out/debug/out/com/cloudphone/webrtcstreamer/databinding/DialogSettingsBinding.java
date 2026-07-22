@@ -30,6 +30,9 @@ public final class DialogSettingsBinding implements ViewBinding {
   public final MaterialButton btnConnectInstance2;
 
   @NonNull
+  public final MaterialButton btnDisconnectDialog;
+
+  @NonNull
   public final MaterialCardView cardInstance1;
 
   @NonNull
@@ -46,12 +49,13 @@ public final class DialogSettingsBinding implements ViewBinding {
 
   private DialogSettingsBinding(@NonNull LinearLayout rootView,
       @NonNull MaterialButton btnConnectInstance1, @NonNull MaterialButton btnConnectInstance2,
-      @NonNull MaterialCardView cardInstance1, @NonNull MaterialCardView cardInstance2,
-      @NonNull TextInputEditText etStreamUrl, @NonNull TextInputLayout tilStreamUrl,
-      @NonNull TextView tvSettingsDescription) {
+      @NonNull MaterialButton btnDisconnectDialog, @NonNull MaterialCardView cardInstance1,
+      @NonNull MaterialCardView cardInstance2, @NonNull TextInputEditText etStreamUrl,
+      @NonNull TextInputLayout tilStreamUrl, @NonNull TextView tvSettingsDescription) {
     this.rootView = rootView;
     this.btnConnectInstance1 = btnConnectInstance1;
     this.btnConnectInstance2 = btnConnectInstance2;
+    this.btnDisconnectDialog = btnDisconnectDialog;
     this.cardInstance1 = cardInstance1;
     this.cardInstance2 = cardInstance2;
     this.etStreamUrl = etStreamUrl;
@@ -98,6 +102,12 @@ public final class DialogSettingsBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.btnDisconnectDialog;
+      MaterialButton btnDisconnectDialog = ViewBindings.findChildViewById(rootView, id);
+      if (btnDisconnectDialog == null) {
+        break missingId;
+      }
+
       id = R.id.cardInstance1;
       MaterialCardView cardInstance1 = ViewBindings.findChildViewById(rootView, id);
       if (cardInstance1 == null) {
@@ -129,8 +139,8 @@ public final class DialogSettingsBinding implements ViewBinding {
       }
 
       return new DialogSettingsBinding((LinearLayout) rootView, btnConnectInstance1,
-          btnConnectInstance2, cardInstance1, cardInstance2, etStreamUrl, tilStreamUrl,
-          tvSettingsDescription);
+          btnConnectInstance2, btnDisconnectDialog, cardInstance1, cardInstance2, etStreamUrl,
+          tilStreamUrl, tvSettingsDescription);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

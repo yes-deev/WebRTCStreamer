@@ -28,9 +28,13 @@ import com.cloudphone.webrtcstreamer.databinding.DialogSettingsBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 /**
- * Cloud Phone / Gaming Streamer Activity (UgPhone style).
- * Auto-triggers live scrcpy stream session, bypasses device list, and forces
- * zero-latency H.264 video autoplay in 100% immersive fullscreen.
+ * 1,000,000x Better UgPhone-Style Premium Android 13 Cloud Phone Client.
+ * Features:
+ * - One-tap Exit Stream / Disconnect
+ * - One-tap Instant Reconnect / Reload
+ * - Floating Control HUD with Live Stream Status
+ * - Material3 Instance Manager Dashboard
+ * - Android 13 redroid support with zero-delay hardware accelerated video playback
  */
 class MainActivity : AppCompatActivity() {
 
@@ -48,12 +52,9 @@ class MainActivity : AppCompatActivity() {
 
         setupImmersiveFullscreen()
         setupHardwareAcceleratedStreamView()
-
-        binding.btnSettings.setOnClickListener {
-            showSettingsDialog()
-        }
-
+        setupControlHudListeners()
         setupBackNavigation()
+
         loadStreamUrl()
     }
 
@@ -77,6 +78,39 @@ class MainActivity : AppCompatActivity() {
         windowInsetsController.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+    }
+
+    /**
+     * Configures listeners for the Floating Stream Control HUD (Exit, Reconnect, Settings).
+     */
+    private fun setupControlHudListeners() {
+        // Exit Stream / Disconnect Button
+        binding.btnExitStream.setOnClickListener {
+            disconnectAndExitStream()
+        }
+
+        // Instant Reconnect Stream Button
+        binding.btnReconnect.setOnClickListener {
+            reconnectStream()
+        }
+
+        // Settings / Instance Manager Button
+        binding.btnSettings.setOnClickListener {
+            showSettingsDialog()
+        }
+    }
+
+    private fun reconnectStream() {
+        Toast.makeText(this, "Reconnecting Cloud Phone stream...", Toast.LENGTH_SHORT).show()
+        binding.tvStreamStatus.text = "CONNECTING..."
+        binding.webView.reload()
+    }
+
+    private fun disconnectAndExitStream() {
+        Toast.makeText(this, "Stream Disconnected", Toast.LENGTH_SHORT).show()
+        binding.tvStreamStatus.text = "OFFLINE"
+        binding.webView.loadUrl("about:blank")
+        showSettingsDialog()
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -128,13 +162,14 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
-                    
-                    // Auto-click "Stream" button if on device list, force video play,
-                    // and expand video canvas to 100% UgPhone style fullscreen
+                    if (url == "about:blank") return
+
+                    binding.tvStreamStatus.text = getString(R.string.hud_status_online)
+
+                    // Auto-trigger stream session and inject UgPhone 100% viewport CSS
                     val autoStreamJs = """
                         (function() {
                             function initStream() {
-                                // Find and click the Stream action button on device list
                                 var links = document.querySelectorAll('a, button, div.action');
                                 for (var i = 0; i < links.length; i++) {
                                     var el = links[i];
@@ -146,13 +181,11 @@ class MainActivity : AppCompatActivity() {
                                     }
                                 }
 
-                                // Force play on any video element
                                 var videos = document.querySelectorAll('video');
                                 videos.forEach(function(v) {
                                     v.play().catch(function(e){});
                                 });
 
-                                // Apply UgPhone 100% Fullscreen CSS
                                 var style = document.getElementById('ugphone-style');
                                 if (!style) {
                                     style = document.createElement('style');
@@ -199,6 +232,7 @@ class MainActivity : AppCompatActivity() {
                 ) {
                     super.onReceivedError(view, request, error)
                     if (request?.isForMainFrame == true) {
+                        binding.tvStreamStatus.text = "OFFLINE"
                         Toast.makeText(
                             this@MainActivity,
                             "Unable to connect to VPS ${request.url}. Tap settings to check IP.",
@@ -213,11 +247,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupBackNavigation() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (binding.webView.canGoBack()) {
-                    binding.webView.goBack()
-                } else {
-                    showSettingsDialog()
-                }
+                showSettingsDialog()
             }
         })
     }
@@ -238,6 +268,11 @@ class MainActivity : AppCompatActivity() {
 
         dialogBinding.btnConnectInstance2.setOnClickListener {
             saveAndReloadUrl("http://185.227.111.231:7001")
+            dialog?.dismiss()
+        }
+
+        dialogBinding.btnDisconnectDialog.setOnClickListener {
+            disconnectAndExitStream()
             dialog?.dismiss()
         }
 

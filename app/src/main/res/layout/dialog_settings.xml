@@ -14,7 +14,7 @@
         android:textAppearance="?attr/textAppearanceBodyMedium"
         android:textColor="?attr/colorOnSurfaceVariant" />
 
-    <!-- VPS IP Input Field -->
+    <!-- VPS Server IP Input -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilStreamUrl"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -42,14 +42,14 @@
         android:textAppearance="?attr/textAppearanceTitleSmall"
         android:textColor="?attr/colorPrimary" />
 
-    <!-- Active Android Instance Cards -->
+    <!-- Active Android 13 Cloud Instance Card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardInstance1"
         style="@style/Widget.Material3.CardView.Outlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        app:cardCornerRadius="12dp"
+        app:cardCornerRadius="14dp"
         app:cardElevation="0dp"
         app:strokeColor="?attr/colorPrimary"
         app:strokeWidth="2dp">
@@ -57,7 +57,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp">
+            android:padding="14dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -70,7 +70,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/instance_default"
+                    android:text="@string/instance_android13"
                     android:textAppearance="?attr/textAppearanceLabelLarge"
                     android:textStyle="bold" />
 
@@ -93,20 +93,21 @@
         </RelativeLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- Secondary Android 13 Instance Card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardInstance2"
         style="@style/Widget.Material3.CardView.Outlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        app:cardCornerRadius="12dp"
+        app:cardCornerRadius="14dp"
         app:cardElevation="0dp"
         app:strokeColor="?attr/colorOutline">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp">
+            android:padding="14dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -119,7 +120,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/instance_2"
+                    android:text="@string/instance_android13_2"
                     android:textAppearance="?attr/textAppearanceLabelLarge"
                     android:textStyle="bold" />
 
@@ -141,5 +142,16 @@
                 android:text="@string/btn_connect" />
         </RelativeLayout>
     </com.google.android.material.card.MaterialCardView>
+
+    <!-- Exit / Disconnect Stream Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnDisconnectDialog"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/btn_exit_stream"
+        android:textColor="#FF5252"
+        app:strokeColor="#FF5252" />
 
 </LinearLayout>

@@ -5,13 +5,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.cloudphone.webrtcstreamer.R;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import java.lang.NullPointerException;
 import java.lang.Override;
 import java.lang.String;
@@ -21,20 +24,38 @@ public final class ActivityMainBinding implements ViewBinding {
   private final ConstraintLayout rootView;
 
   @NonNull
-  public final FloatingActionButton btnSettings;
+  public final MaterialButton btnExitStream;
+
+  @NonNull
+  public final ImageButton btnReconnect;
+
+  @NonNull
+  public final ImageButton btnSettings;
+
+  @NonNull
+  public final MaterialCardView cardHudBar;
 
   @NonNull
   public final ConstraintLayout rootLayout;
 
   @NonNull
+  public final TextView tvStreamStatus;
+
+  @NonNull
   public final WebView webView;
 
   private ActivityMainBinding(@NonNull ConstraintLayout rootView,
-      @NonNull FloatingActionButton btnSettings, @NonNull ConstraintLayout rootLayout,
+      @NonNull MaterialButton btnExitStream, @NonNull ImageButton btnReconnect,
+      @NonNull ImageButton btnSettings, @NonNull MaterialCardView cardHudBar,
+      @NonNull ConstraintLayout rootLayout, @NonNull TextView tvStreamStatus,
       @NonNull WebView webView) {
     this.rootView = rootView;
+    this.btnExitStream = btnExitStream;
+    this.btnReconnect = btnReconnect;
     this.btnSettings = btnSettings;
+    this.cardHudBar = cardHudBar;
     this.rootLayout = rootLayout;
+    this.tvStreamStatus = tvStreamStatus;
     this.webView = webView;
   }
 
@@ -65,13 +86,37 @@ public final class ActivityMainBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.btnExitStream;
+      MaterialButton btnExitStream = ViewBindings.findChildViewById(rootView, id);
+      if (btnExitStream == null) {
+        break missingId;
+      }
+
+      id = R.id.btnReconnect;
+      ImageButton btnReconnect = ViewBindings.findChildViewById(rootView, id);
+      if (btnReconnect == null) {
+        break missingId;
+      }
+
       id = R.id.btnSettings;
-      FloatingActionButton btnSettings = ViewBindings.findChildViewById(rootView, id);
+      ImageButton btnSettings = ViewBindings.findChildViewById(rootView, id);
       if (btnSettings == null) {
         break missingId;
       }
 
+      id = R.id.cardHudBar;
+      MaterialCardView cardHudBar = ViewBindings.findChildViewById(rootView, id);
+      if (cardHudBar == null) {
+        break missingId;
+      }
+
       ConstraintLayout rootLayout = (ConstraintLayout) rootView;
+
+      id = R.id.tvStreamStatus;
+      TextView tvStreamStatus = ViewBindings.findChildViewById(rootView, id);
+      if (tvStreamStatus == null) {
+        break missingId;
+      }
 
       id = R.id.webView;
       WebView webView = ViewBindings.findChildViewById(rootView, id);
@@ -79,7 +124,8 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityMainBinding((ConstraintLayout) rootView, btnSettings, rootLayout, webView);
+      return new ActivityMainBinding((ConstraintLayout) rootView, btnExitStream, btnReconnect,
+          btnSettings, cardHudBar, rootLayout, tvStreamStatus, webView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

@@ -9,7 +9,7 @@
     android:fitsSystemWindows="false"
     tools:context=".MainActivity">
 
-    <!-- Zero-Delay Hardware-Accelerated Fullscreen Scrcpy Renderer -->
+    <!-- Zero-Delay Hardware-Accelerated Fullscreen Cloud Phone Renderer -->
     <android.webkit.WebView
         android:id="@+id/webView"
         android:layout_width="0dp"
@@ -22,23 +22,89 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Subtle Translucent Settings Floating Action Button (Top-Right Overlay) -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btnSettings"
+    <!-- Premium Floating Stream HUD / Control Bar (Top-Right Overlay) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardHudBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
-        android:contentDescription="@string/settings_title"
-        android:src="@drawable/ic_settings"
-        app:backgroundTint="#4D000000"
-        app:borderWidth="1dp"
-        app:elevation="4dp"
-        app:fabCustomSize="44dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        app:cardBackgroundColor="#80000000"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="6dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:maxImageSize="22dp"
-        app:rippleColor="#80FFFFFF"
-        app:tint="#D9FFFFFF" />
+        app:strokeColor="#33FFFFFF"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="4dp">
+
+            <!-- Live Status Indicator -->
+            <View
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="@drawable/bg_settings_button"
+                android:backgroundTint="#4CAF50" />
+
+            <TextView
+                android:id="@+id/tvStreamStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="10dp"
+                android:text="@string/hud_status_online"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:textColor="#E0FFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <!-- Reconnect Button -->
+            <ImageButton
+                android:id="@+id/btnReconnect"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/btn_reconnect"
+                android:padding="6dp"
+                android:src="@drawable/ic_settings"
+                app:tint="#D9FFFFFF" />
+
+            <!-- Settings / Instance Manager Button -->
+            <ImageButton
+                android:id="@+id/btnSettings"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/settings_title"
+                android:padding="6dp"
+                android:src="@drawable/ic_settings"
+                app:tint="#D9FFFFFF" />
+
+            <!-- Exit Stream / Disconnect Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnExitStream"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_marginStart="4dp"
+                android:minWidth="0dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="Exit"
+                android:textColor="#FF5252"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
